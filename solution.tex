@@ -1,0 +1,189 @@
+\documentclass[14pt,a4paper]{article}
+
+\usepackage[UTF8]{ctex}
+\usepackage[margin=1.8cm]{geometry}
+\usepackage{amsmath,amssymb,booktabs,graphicx,hyperref,enumitem,fancyhdr,listings,float,minted,bookmark}
+\usepackage{titlesec}
+\usepackage[most]{tcolorbox}
+\titleformat{\section}{\centering\LARGE\bfseries}{\thesection}{1em}{}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textbf{2025 - 1024 PDCC}}
+\fancyhead[R]{\bf Page \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+\linespread{1.2}
+\setlist[itemize]{itemsep=0pt, topsep=2pt}
+\setlist[enumerate]{itemsep=0pt, topsep=2pt}
+
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny,
+  backgroundcolor=\color[gray]{0.96},
+  xleftmargin=1.5em,
+}
+\newtcolorbox{hintbox}{
+  enhanced,
+  colback=blue!5!white, 
+  colframe=blue!50!black,
+  fonttitle=\bfseries,      % 标题加粗
+  coltitle=white,           % 标题颜色
+  title=Hint,               % 框标题
+  sharp corners,
+  boxrule=0.5pt,
+  left=6pt, right=6pt, top=6pt, bottom=6pt,
+  before skip=10pt, after skip=10pt,
+  breakable,                % 允许跨页
+}
+
+\begin{document}
+
+\vspace*{\fill}
+\begin{center}
+  {\Huge \bfseries 1024 Coding Challenge (Algorithmic)}\\[1em]
+  { \Large 2025 Programmer's Day }\\[1em]
+  { \Large Full Solution}\\[1em]
+\end{center}
+\vspace*{\fill}
+\clearpage
+
+\section{台风}
+签到题，输出 \texttt{Reject!} 即可。
+
+\section{图书馆整理计划}
+签到题，输出 $\left(\sum_{i=1}^{n} a_i\right)/B\times X + \left(\sum_{i=1}^{n} a_i\right) \times Y \bmod B $ 即可。
+
+
+\section{星辉廊道}
+显然，本题可以被简单的化简为\textbf{最大化路径上所有边权的按位与}。
+
+\begin{hintbox}
+考虑按位与运算的性质：若结果的某一位为 $1$，则路径上所有边该位都必须为 $1$。
+\end{hintbox}
+
+我们可以采用按位枚举的套路确定答案。
+
+具体而言，我们从高位往低位逐步构造答案 $\text{ans}$：
+
+\begin{enumerate}
+  \item 初始 $\text{ans}=0$。
+  \item 从第 $29$ 位到第 $0$ 位，对于每一位 $b$）：
+  \begin{itemize}
+  \item 令 $\text{test} \leftarrow \text{ans} \lor (1 \ll b)$，假设当前位为 $1$。
+  \item 仅保留所有满足 $(w \land \text{test}) = \text{test}$ 的边（即选择所有在第 $b$ 位上是 $1$ 的边）。
+  \item 在这个新图中暴力 BFS 检查 $1$ 是否能到达 $N$。
+  \item 若能到达，则说明该位可以保留，更新答案；否则该位不能保留，保持答案不变。
+  \end{itemize}
+\end{enumerate}
+
+\begin{minted}{cpp}
+signed main(){
+	cin.tie(nullptr)->sync_with_stdio(0);
+	cin>>n>>m;
+	for(int i=1;i<=m;i++){
+		int u,v,w;cin>>u>>v>>w;
+		add(u,v,w),add(v,u,w);
+	}
+	auto chk=[&](int flag){
+		vector<int> vis(n+1,0);
+		queue<int> q; vis[1]=1; q.push(1);
+		while(!q.empty()){
+			int u=q.front();q.pop();
+			for(int i=head[u];i;i=edge[i].next){
+				int v=edge[i].to, w=edge[i].w;
+				if(!vis[v] && ((w&flag)==flag)){
+					vis[v]=1;
+					q.push(v);
+				}
+			}
+		}
+		return vis[n];
+	};
+	for(int s=29;s>=0;s--){
+		int tmp=cnt|(1<<s);
+		if(chk(tmp)) cnt=tmp;
+	}
+	cout<<cnt;
+	return 0;
+}
+\end{minted}
+
+\section{File Restoration}
+又是一道小清新 DP 好题！Allen 太喜欢 DP 了（什
+
+观察题面，一个很好的思路是将每一个文件夹抽象为一个节点，则整个文件夹目录可以被视作一棵树。
+
+考虑如何设计状态以及如何进行树上转移。
+
+由于两种操作一种是单点翻转一种是子树翻转，我们从相对来说较难的子树翻转入手。
+
+\paragraph{状态}
+子树翻转每次都会将一个父节点的所有子节点以及其本身直接翻转，因此 DP 状态中肯定需要一个东西去记录和转移继承下来的翻转信息。
+
+设 $p\in\{0,1\}$ 为到达当前节点时，因父节点的 “子树翻转” 累积到它身上的翻转奇偶。
+
+$dp_{u,p}$ 就可以被设计为：
+
+\textbf{在节点 $u$，在已承受奇偶为 $p$ 的情况下，让 $u$ 的整棵子树全为 $1$ 的最小操作数。}
+
+\paragraph{转移}
+有了状态，转移就是 trivial 的了。
+
+我们仅需在 $u$ 处决定是否做一次“以 $u$ 为根的子树翻转”。
+
+记该决策 $y\in\{0,1\}$，做了之后传下去的懒标记变为 $p' = p\oplus y$。
+
+$v$ 的当前值变成 $a_v\oplus p'$。若为 $0$，需要再做一次 “单点翻转 $v$”。
+
+子树代价显然是 $\sum_{\forall \text{son}} dp_{\text{son},p'}$。
+
+\begin{minted}{cpp}
+int arr[maxn];
+vector<int> e[maxn];
+int dp[maxn][2];
+
+void dfs(int u, int fa){
+	for(int v:e[u]){
+		if(v!=fa) dfs(v,u);
+	}
+	for(int p=0;p<=1;p++){
+		int best=1e9+7;
+		for(int y=0;y<=1;y++){
+			int flag=arr[u]^p^y^1;
+			int cost=y+flag;
+			for (int v:e[u]){
+				if(v!=fa) cost+=dp[v][p^y];
+			}
+			best=min(best,cost);
+		}
+		dp[u][p]=best;
+	}
+}
+
+signed main(){
+	cin.tie(nullptr)->sync_with_stdio(0);
+	cin>>n;
+	for(int i=1;i<=n;i++) cin>>arr[i];
+	for(int i=1;i<=n-1;i++){
+		int u,v;cin>>u>>v;
+		e[u].pb(v);e[v].pb(u);
+	}
+	dfs(1,0);
+	cout<<dp[1][0]<<endl;
+	return 0;
+}
+\end{minted}
+
+\section{抽卡打怪}
+来一发验题人题解。
+
+\section{「星光渐明之时」}
+
+\end{document}
