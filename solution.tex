@@ -12,7 +12,6 @@
 \fancyhead[R]{\bf Page \thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
-
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.5em}
 \linespread{1.2}
@@ -85,33 +84,33 @@
 
 \begin{minted}{cpp}
 signed main(){
-	cin.tie(nullptr)->sync_with_stdio(0);
-	cin>>n>>m;
-	for(int i=1;i<=m;i++){
-		int u,v,w;cin>>u>>v>>w;
-		add(u,v,w),add(v,u,w);
-	}
-	auto chk=[&](int flag){
-		vector<int> vis(n+1,0);
-		queue<int> q; vis[1]=1; q.push(1);
-		while(!q.empty()){
-			int u=q.front();q.pop();
-			for(int i=head[u];i;i=edge[i].next){
-				int v=edge[i].to, w=edge[i].w;
-				if(!vis[v] && ((w&flag)==flag)){
-					vis[v]=1;
-					q.push(v);
-				}
-			}
-		}
-		return vis[n];
-	};
-	for(int s=29;s>=0;s--){
-		int tmp=cnt|(1<<s);
-		if(chk(tmp)) cnt=tmp;
-	}
-	cout<<cnt;
-	return 0;
+    cin.tie(nullptr)->sync_with_stdio(0);
+    cin>>n>>m;
+    for(int i=1;i<=m;i++){
+        int u,v,w;cin>>u>>v>>w;
+        add(u,v,w),add(v,u,w);
+    }
+    auto chk=[&](int flag){
+        vector<int> vis(n+1,0);
+        queue<int> q; vis[1]=1; q.push(1);
+        while(!q.empty()){
+            int u=q.front();q.pop();
+            for(int i=head[u];i;i=edge[i].next){
+                int v=edge[i].to, w=edge[i].w;
+                if(!vis[v] && ((w&flag)==flag)){
+                    vis[v]=1;
+                    q.push(v);
+                }
+            }
+        }
+        return vis[n];
+    };
+    for(int s=29;s>=0;s--){
+        int tmp=cnt|(1<<s);
+        if(chk(tmp)) cnt=tmp;
+    }
+    cout<<cnt;
+    return 0;
 }
 \end{minted}
 
@@ -150,34 +149,34 @@ vector<int> e[maxn];
 int dp[maxn][2];
 
 void dfs(int u, int fa){
-	for(int v:e[u]){
-		if(v!=fa) dfs(v,u);
-	}
-	for(int p=0;p<=1;p++){
-		int best=1e9+7;
-		for(int y=0;y<=1;y++){
-			int flag=arr[u]^p^y^1;
-			int cost=y+flag;
-			for (int v:e[u]){
-				if(v!=fa) cost+=dp[v][p^y];
-			}
-			best=min(best,cost);
-		}
-		dp[u][p]=best;
-	}
+    for(int v:e[u]){
+        if(v!=fa) dfs(v,u);
+    }
+    for(int p=0;p<=1;p++){
+        int best=1e9+7;
+        for(int y=0;y<=1;y++){
+            int flag=arr[u]^p^y^1;
+            int cost=y+flag;
+            for (int v:e[u]){
+                if(v!=fa) cost+=dp[v][p^y];
+            }
+            best=min(best,cost);
+        }
+        dp[u][p]=best;
+    }
 }
 
 signed main(){
-	cin.tie(nullptr)->sync_with_stdio(0);
-	cin>>n;
-	for(int i=1;i<=n;i++) cin>>arr[i];
-	for(int i=1;i<=n-1;i++){
-		int u,v;cin>>u>>v;
-		e[u].pb(v);e[v].pb(u);
-	}
-	dfs(1,0);
-	cout<<dp[1][0]<<endl;
-	return 0;
+    cin.tie(nullptr)->sync_with_stdio(0);
+    cin>>n;
+    for(int i=1;i<=n;i++) cin>>arr[i];
+    for(int i=1;i<=n-1;i++){
+        int u,v;cin>>u>>v;
+        e[u].pb(v);e[v].pb(u);
+    }
+    dfs(1,0);
+    cout<<dp[1][0]<<endl;
+    return 0;
 }
 \end{minted}
 
