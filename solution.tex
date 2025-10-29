@@ -84,8 +84,94 @@
 \section{台风}
 签到题，输出 \texttt{Reject!} 即可。
 
+\section{神秘的三角形}
+签到题，建议用 python 避免精度出问题。
+
 \section{图书馆整理计划}
 签到题，输出 $\left(\sum_{i=1}^{n} a_i\right)/B\times X + \left(\sum_{i=1}^{n} a_i\right) \times Y \bmod B $ 即可。
+
+\section{Fetch-Decode-Execute}
+出题人的语文水平过于低下导致这道小模拟变成阅读理解，没什么特别需要解释的，放个std。python可能会超时
+\begin{minted}{python3}
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Instruction {
+    string op;
+    int arg;
+};
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
+    int n;
+    cin >> n;
+
+    vector<Instruction> prog;
+    prog.reserve(n);
+
+    for (int i = 0; i < n; ++i) {
+        string op_str;
+        cin >> op_str;
+
+        int arg_val = 0;
+        if (op_str != "NOP" && op_str != "HALT") {
+            cin >> arg_val;
+        }
+        prog.push_back({op_str, arg_val});
+    }
+
+    int A = 0;
+    vector<int> D(256, 0);
+    int PC = 0;
+    long long cycles = 0;
+    const int MAX_CYCLES = 10000000;
+    string reason;
+
+    while (true) {
+        if (cycles >= MAX_CYCLES) {
+            reason = "TIMEOUT";
+            break;
+        }
+
+        if (PC < 0 || PC >= n) {
+            reason = "CRASH";
+            break;
+        }
+
+        string op = prog[PC].op;
+        int arg = prog[PC].arg;
+        cycles++;
+        int next_pc = PC + 1;
+
+        if (op == "LOAD") A = D[arg];
+        else if (op == "STORE") D[arg] = A;
+        else if (op == "ADD") A += D[arg];
+        else if (op == "SUB") A -= D[arg];
+        else if (op == "MUL") A *= D[arg];
+        else if (op == "MOV") A = arg;
+        else if (op == "JMP") next_pc = arg;
+        else if (op == "JZ") {
+            if (A == 0) next_pc = arg;
+        } else if (op == "JNZ") {
+            if (A != 0) next_pc = arg;
+        } else if (op == "NOP") {
+        } else if (op == "HALT") {
+            reason = "HALT";
+            break;
+        }
+
+        PC = next_pc;
+    }
+
+    cout << reason << endl;
+    cout << A << endl;
+    cout << cycles << endl;
+
+    return 0;
+}
+\end{minted}
 
 
 \section{星辉廊道}
