@@ -92,7 +92,7 @@
 
 \section{Fetch-Decode-Execute}
 出题人的语文水平过于低下导致这道小模拟变成阅读理解，没什么特别需要解释的，放个std。python可能会超时
-\begin{minted}{python3}
+\begin{minted}{cpp}
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -374,6 +374,11 @@ signed main(){
 问题来了，怎么实现这个算法呢？
 
 观察 $s_i$ 图像：
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{image.png}
+\end{figure}
 
 我们不难发现我们最后的答案就是图像中标出来的东西，由多个 $\min$ 分界点对应区间的贡献合并而成。
 
