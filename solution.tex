@@ -75,6 +75,22 @@
   \end{tabular}
 \end{table}
 
+\begin{table}[htbp]
+  \centering
+  \setlength{\tabcolsep}{8pt}  % 列间距
+  \renewcommand{\arraystretch}{1.3} % 行距
+  \begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    总提交次数 & 689 \\ \hline
+    通过次数 & 124 \\ \hline
+    时间超限 & 21 \\ \hline
+    运行中错误 & 37 \\ \hline
+    答案错误（零分） & 149 \\ \hline
+    答案错误（部分分） & 287 \\ \hline
+    编译错误 & 71 \\ \hline
+  \end{tabular}
+\end{table}
+
 { \Large \bfseries Staff 如是说：}
 \begin{itemize}
     \item Allen: L 题通过率有点小高哈，这道题本来有 puzzle 元素的结果后面被砍掉了（悲。不过看大家做题还是很爽的！orz orz jhd \& wowo AK！
@@ -305,7 +321,7 @@ signed main(){
 部分分能给我们很大的启发。
 
 \subsection{Subtask 1}
-给了 $8$ 分的暴力分，但是可能普通暴力过不去，因为带修改情况下 $a_i$ 有一定概率超过给定值域 $V = 10^9$，也有可能会爆 long long。
+给了 $8$ 分的暴力分，但是可能普通暴力过不去，因为带修改情况下 $a_i$ 有一定概率超过给定值域 $V = 10^9$，会爆 long long。
 
 \subsection{Subtask 2}
 
@@ -322,7 +338,7 @@ signed main(){
 询问的目标是最小化：
 
 \begin{equation}
-    \sum_{i=l+1}^{r} e_i \quad \text{s.t.} \quad a_i\times 2^{e_i} \le a_{i+1}\times 2^{e_{i+1}} \quad (\forall i \in [l, r-1]).
+    \sum_{i=l+1}^{r} e_i \quad \text{s.t.} \quad a_i\times 2^{e_i} \le a_{i+1}\times 2^{e_{i+1}} \quad (\forall i \in [l+1, r]).
     \label{eq:goal1}
 \end{equation}
 
@@ -384,7 +400,7 @@ signed main(){
 
 我们可以用一个单调栈来维护这些分界点，加上前缀和的预处理，每次询问时暴力遍历所有分界点，统计答案即可。
 
-时间复杂度显然正确，因为在不带修改的情况下，分界点的数量不会超过 $O(\log_2 V)$ ($\min s_t$ 最多被“刷新” $O(\log_2 V)$ 次)，在随机数据下常数很小，跑的很快。
+时间复杂度正确，因为在不带修改的情况下，分界点的数量不会超过 $O(\log_2 V)$ ($\min s_t$ 最多被“刷新” $O(\log_2 V)$ 次)，在随机数据下常数很小，跑的很快。
 
 这一部分给了 24 分的部分分。
 
@@ -400,11 +416,11 @@ signed main(){
 
 具体而言，我们只需要实现一个函数 $\text{queryFirst}(x) $，返回第一个满足 $s_i \le x$ 的位置 $i$ 即可，该位置即是我们所需的分界点。
 
-带修改后，单次查询期望时间复杂度退化为 $O(\sqrt{n} \times \log_2 n)$（$n,q$ 同阶，证明略），常数超级小就是了，跑的飞快。
+带修改后，单次查询期望时间复杂度退化为 $O(\sqrt{n} \times \log_2 n)$（$n,q$ 同阶，证明略），常数超级小，跑的飞快。
 
-当然，\eqref{eq:ans} 可以直接套单侧递归线段树做，单次复杂度直接进化为 $O(\log_2^2 n)$，但是实测常数很大，跑的比 sqrt 慢就是了（验题人以及 wowo 都是此类写法）。
+当然，\eqref{eq:ans} 可以直接套单侧递归线段树做，单次复杂度直接进化为 $O(\log_2^2 n)$，但是实测常数很大，跑的比 sqrt 慢（验题人以及 wowo 都是此类写法）。
 
-后面的事情就是 trivial 的了。
+后面的事情比较简短，不做赘述。
 
 \begin{minted}{cpp}
 int arr[maxn], brr[maxn];
